@@ -1,0 +1,12 @@
+name: BeBroHunt
+version: '${project.version}'
+main: yt.bebr0.bebr0hunt.Plugin
+api-version: 1.19
+authors: [ BeBr0 ]
+
+commands:
+  gameSetting:
+    aliases: gs
+
+  bebroHunt:
+    aliases: bh
