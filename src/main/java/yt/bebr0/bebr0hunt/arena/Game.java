@@ -1,6 +1,8 @@
 package yt.bebr0.bebr0hunt.arena;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -8,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import yt.bebr0.bebr0hunt.Plugin;
+import yt.bebr0.bebr0hunt.arena.classes.Class;
 import yt.bebr0.bebr0hunt.util.ItemUtil;
 
 import java.util.ArrayList;
@@ -44,6 +47,7 @@ public class Game {
         arena.setOpen(false);
         randomizeRoles();
         teleportPlayers();
+        randomizeClasses();
     }
     public void teleportPlayers(){
         Location targetLocation;
@@ -96,7 +100,18 @@ public class Game {
             player.removePotionEffect(potionEffect.getType());
         }
 
+        player.setGameMode(GameMode.SURVIVAL);
         player.getInventory().addItem(compass);
+    }
+
+    private void randomizeClasses(){
+        Random random = new Random();
+        for (Player player: arena.getPlayers()){
+            Class randomClass = Class.values()[random.nextInt(Class.values().length)];
+            randomClass.grantAbilities(player);
+
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', randomClass.getName()));
+        }
     }
 
     private void randomizeRoles(){
@@ -104,7 +119,7 @@ public class Game {
 
         for (Player player: arena.getPlayers()){
             for (String target: prioritizedTargets){
-                if (player.getDisplayName().equals(target)){
+                if (player.displayName().equals(Component.text(target))){
                     gamePlayers.add(new GamePlayer(player, Role.TARGET));
                     isTargetFound = true;
                     break;

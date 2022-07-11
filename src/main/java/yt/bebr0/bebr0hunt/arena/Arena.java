@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import yt.bebr0.bebr0hunt.Plugin;
+import yt.bebr0.bebr0hunt.util.ChatUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,9 +83,16 @@ public class Arena {
             }
         }
 
+        onJoinLocation.clear();
+
         for (Player player: onJoinSpawn.keySet()){
             player.setBedSpawnLocation(onJoinLocation.get(player));
         }
+
+        onJoinSpawn.clear();
+
+        isOpen = true;
+        isStarting = false;
     }
 
     public boolean join(Player player){
@@ -109,17 +117,15 @@ public class Arena {
         return false;
     }
 
-    public boolean leave(Player player){
+    public void leave(Player player){
         if (players.contains(player)) {
             sendArenaMessage(player.getDisplayName() + " вышел!");
             players.remove(player);
             player.teleport(onJoinLocation.get(player));
 
             onJoinLocation.remove(player);
-            return true;
         }
 
-        return false;
     }
 
     private void startTimer(){
@@ -148,7 +154,7 @@ public class Arena {
 
     public void sendArenaMessage(String msg){
         for (Player player: players){
-            player.sendMessage(ChatColor.GOLD + "[" + name + "]: " + ChatColor.AQUA + msg);
+            ChatUtil.sendMessage(player, msg, false);
         }
     }
 

@@ -1,5 +1,6 @@
 package yt.bebr0.bebr0hunt.cmds;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,7 +22,7 @@ public class GameSettingCMDs implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)){
-            sender.sendMessage("Только игрок.");
+            ChatUtil.sendMessage(sender, "Только игрок может выполнять эту команду!", true);
             return true;
         }
 
@@ -33,7 +34,25 @@ public class GameSettingCMDs implements CommandExecutor {
                     ChatUtil.sendMessage(player, "- " + arena.getName(), false);
                 }
             }
-            if (args[0].equalsIgnoreCase("create")) {
+            else if (args[0].equalsIgnoreCase("joinAll")){
+                if (args.length == 1) {
+                    ChatUtil.sendMessage(player, "Укажи имя арены", true);
+                    return true;
+                }
+
+                Arena arena = Arena.get(args[1]);
+                if (arena == null) {
+                    ChatUtil.sendMessage(player, "Такой арены не существует!", true);
+                    return true;
+                }
+
+                for (Player onlinePlayer: Bukkit.getOnlinePlayers()){
+                    arena.join(onlinePlayer);
+                }
+
+                ChatUtil.sendMessage(player, "Выполнено!", false);
+            }
+            else if (args[0].equalsIgnoreCase("create")) {
                 if (args.length == 1) {
                     ChatUtil.sendMessage(player, "Укажи имя арены", true);
                     return true;

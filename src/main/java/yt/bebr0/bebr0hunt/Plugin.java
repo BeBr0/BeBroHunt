@@ -3,6 +3,7 @@ package yt.bebr0.bebr0hunt;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import yt.bebr0.bebr0hunt.arena.Game;
+import yt.bebr0.bebr0hunt.arena.classes.ClassEvent;
 import yt.bebr0.bebr0hunt.cmds.GameSettingCMDs;
 import yt.bebr0.bebr0hunt.cmds.PlayerCMDs;
 import yt.bebr0.bebr0hunt.events.ArenaEvents;
@@ -27,6 +28,7 @@ public final class Plugin extends JavaPlugin {
         saveDefaultConfig();
 
         Bukkit.getPluginManager().registerEvents(new ArenaEvents(), this);
+        Bukkit.getPluginManager().registerEvents(new ClassEvent(), this);
 
         new GameSettingCMDs(this);
         new PlayerCMDs(this);

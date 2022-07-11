@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -21,8 +22,8 @@ import yt.bebr0.bebr0hunt.arena.Role;
 public class ArenaEvents implements Listener {
 
     @EventHandler
-    public void onRightClick(PlayerInteractEvent event){
-        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK){
+    public void onRightClick(PlayerInteractEvent event) {
+        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Player player = event.getPlayer();
             Arena arena = Arena.get(player);
             if (arena != null) {
@@ -34,17 +35,17 @@ public class ArenaEvents implements Listener {
     }
 
     @EventHandler
-    public void onAttack(EntityDamageByEntityEvent event){
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player){
+    public void onAttack(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             Player damager = (Player) event.getDamager();
             Player player = (Player) event.getEntity();
 
             Arena arena = Arena.get(damager);
 
-            if (arena != null){
+            if (arena != null) {
                 if (arena.getGame().getRole(damager) == arena.getGame().getRole(player) ||
                         (arena.getGame().getRole(damager) == Role.GUARD && arena.getGame().getRole(player) == Role.TARGET) ||
-                        (arena.getGame().getRole(damager) == Role.TARGET && arena.getGame().getRole(player) == Role.GUARD)){
+                        (arena.getGame().getRole(damager) == Role.TARGET && arena.getGame().getRole(player) == Role.GUARD)) {
 
                     event.setCancelled(true);
                 }
@@ -53,7 +54,7 @@ public class ArenaEvents implements Listener {
     }
 
     @EventHandler
-    public void onLeaveZone(PlayerMoveEvent event){
+    public void onLeaveZone(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         Arena arena = Arena.get(player);
         if (arena != null) {
@@ -68,24 +69,31 @@ public class ArenaEvents implements Listener {
     }
 
     @EventHandler
-    public void onServerLeave(PlayerQuitEvent event){
+    public void onServerLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         Arena arena = Arena.get(player);
 
-        if (arena != null){
+        if (arena != null) {
             arena.leave(player);
         }
     }
 
     @EventHandler
-    public void onDeath(PlayerDeathEvent event){
+    public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         Arena arena = Arena.get(player);
 
-        if (arena != null){
-            if (arena.getGame().getTarget().getPlayer().equals(player)){
+        if (arena != null) {
+            if (arena.getGame().getTarget().getPlayer().equals(player)) {
                 arena.getGame().onTargetDeath(player.getKiller());
             }
+        }
+    }
+
+    @EventHandler
+    public void onBlockBrake(BlockBreakEvent event) {
+        if (Arena.get(event.getPlayer()) != null) {
+            event.setCancelled(true);
         }
     }
 }
