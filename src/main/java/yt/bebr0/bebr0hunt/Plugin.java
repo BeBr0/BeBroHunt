@@ -7,6 +7,7 @@ import yt.bebr0.bebr0hunt.cmds.GameSettingCMDs;
 import yt.bebr0.bebr0hunt.cmds.PlayerCMDs;
 import yt.bebr0.bebr0hunt.events.ArenaEvents;
 
+import java.io.IOException;
 import java.util.List;
 
 /*
@@ -21,14 +22,22 @@ public final class Plugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        Game.setPrioritizedPlayers((List<String>) getConfig().get("prioritized_players"));
+        Game.setPrioritizedTargets((List<String>) getConfig().getList("prioritized_targets"));
+
+        saveDefaultConfig();
 
         Bukkit.getPluginManager().registerEvents(new ArenaEvents(), this);
 
         new GameSettingCMDs(this);
         new PlayerCMDs(this);
 
-        ConfigWorker.loadFromConfig();
+
+        try {
+            ConfigWorker.loadFromConfig();
+        } catch (IOException e) {
+            System.out.println("[Bebr0Hunt]: Unable to load cfg");
+            e.printStackTrace();
+        }
     }
 
     @Override

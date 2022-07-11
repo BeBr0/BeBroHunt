@@ -1,6 +1,5 @@
 package yt.bebr0.bebr0hunt.arena;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import yt.bebr0.bebr0hunt.Plugin;
-import yt.bebr0.bebr0hunt.Util;
+import yt.bebr0.bebr0hunt.util.ItemUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,32 +20,31 @@ import java.util.Random;
 */
 public class Game {
 
-    private static List<String> prioritizedPlayers = new ArrayList<>();
-    public static final ItemStack compass = Util.createItemStack(ChatColor.GREEN + "ПКМ - Указать на цель", List.of("Нажимай ПКМ, чтобы обновить"), Material.COMPASS);
+    private static List<String> prioritizedTargets = new ArrayList<>();
+    public static final ItemStack compass = ItemUtil.createItemStack(ChatColor.GREEN + "ПКМ - Указать на цель", List.of("Нажимай ПКМ, чтобы обновить"), Material.COMPASS);
 
-    private static List<Material> forbiddenBlocks = List.of(
+    private static final List<Material> forbiddenBlocks = List.of(
             Material.LAVA,
-            Material.MAGMA_BLOCK,
-            Material.POWDER_SNOW
+            Material.MAGMA_BLOCK
     );
 
-    public static void setPrioritizedPlayers(List<String> list) {
-        prioritizedPlayers = list;
+    public static void setPrioritizedTargets(List<String> list) {
+        prioritizedTargets = list;
     }
 
     private final List<GamePlayer> gamePlayers = new ArrayList<>();
 
-    private Arena arena;
+    private final Arena arena;
 
     public Game(Arena arena){
         this.arena = arena;
     }
 
     public void start(){
+        arena.setOpen(false);
         randomizeRoles();
         teleportPlayers();
     }
-
     public void teleportPlayers(){
         Location targetLocation;
 
@@ -62,7 +60,6 @@ public class Game {
                     location.setY(y);
                     if (location.getBlock().getType() != Material.AIR && location.getBlock().getType() != Material.VOID_AIR){
                         if (!forbiddenBlocks.contains(location.getBlock().getType())) {
-                            System.out.println(location.getBlock().getType());
                             isFound = true;
                             break;
                         }
@@ -78,11 +75,15 @@ public class Game {
         }
 
         for (GamePlayer gamePlayer: gamePlayers){
-            if (gamePlayer.getRole() == Role.ATTACKER)
+            if (gamePlayer.getRole() == Role.ATTACKER) {
                 gamePlayer.getPlayer().teleport(arena.getAttackersSpawn());
+
+                gamePlayer.getPlayer().setBedSpawnLocation(arena.getAttackersSpawn());
+            }
 
             else{
                 gamePlayer.getPlayer().teleport(targetLocation);
+                gamePlayer.getPlayer().setBedSpawnLocation(targetLocation);
             }
 
             preparePlayer(gamePlayer.getPlayer());
@@ -102,7 +103,7 @@ public class Game {
         boolean isTargetFound = false;
 
         for (Player player: arena.getPlayers()){
-            for (String target: prioritizedPlayers){
+            for (String target: prioritizedTargets){
                 if (player.getDisplayName().equals(target)){
                     gamePlayers.add(new GamePlayer(player, Role.TARGET));
                     isTargetFound = true;
@@ -114,6 +115,7 @@ public class Game {
                 break;
             }
         }
+
         Random random = new Random();
 
         if (!isTargetFound){
@@ -123,14 +125,18 @@ public class Game {
         }
 
         int guardsNum = arena.getPlayers().size() / 4;
+        int currGuardsNum = 0;
 
         for (int i = 0; i < guardsNum; i++){
+            if (currGuardsNum >= guardsNum)
+                break;
             while (true) {
                 int randomPlayerNum = random.nextInt(0, arena.getPlayers().size());
 
                 Player player = arena.getPlayers().get(randomPlayerNum);
                 if (getRole(player) == null){
                     gamePlayers.add(new GamePlayer(player, Role.GUARD));
+                    currGuardsNum += 1;
                     break;
                 }
             }

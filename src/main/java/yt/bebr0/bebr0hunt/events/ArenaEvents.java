@@ -1,5 +1,6 @@
 package yt.bebr0.bebr0hunt.events;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,17 +36,12 @@ public class ArenaEvents implements Listener {
     @EventHandler
     public void onAttack(EntityDamageByEntityEvent event){
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player){
-            Arena arena = Arena.get((Player) event.getDamager());
-
             Player damager = (Player) event.getDamager();
             Player player = (Player) event.getEntity();
 
-            if (arena != null){
-                if (!arena.isOpen()) {
-                    event.setCancelled(true);
-                    return;
-                }
+            Arena arena = Arena.get(damager);
 
+            if (arena != null){
                 if (arena.getGame().getRole(damager) == arena.getGame().getRole(player) ||
                         (arena.getGame().getRole(damager) == Role.GUARD && arena.getGame().getRole(player) == Role.TARGET) ||
                         (arena.getGame().getRole(damager) == Role.TARGET && arena.getGame().getRole(player) == Role.GUARD)){
@@ -57,14 +53,15 @@ public class ArenaEvents implements Listener {
     }
 
     @EventHandler
-    public void onLeave(PlayerMoveEvent event){
+    public void onLeaveZone(PlayerMoveEvent event){
         Player player = event.getPlayer();
         Arena arena = Arena.get(player);
         if (arena != null) {
-            if (event.getTo() != null) {
+            if (event.getTo() != null && !arena.isOpen()) {
                 if (event.getTo().getX() > arena.getPos2().getX() || event.getTo().getZ() > arena.getPos2().getZ() ||
                         event.getTo().getX() < arena.getPos1().getX() || event.getTo().getZ() < arena.getPos1().getZ()) {
                     event.setCancelled(true);
+                    player.sendMessage(ChatColor.GOLD + "[" + arena.getName() + "]: " + ChatColor.AQUA + "Ты пытаешься покинуть зону игры!");
                 }
             }
         }
@@ -81,7 +78,7 @@ public class ArenaEvents implements Listener {
     }
 
     @EventHandler
-    public void onTargetDeath(PlayerDeathEvent event){
+    public void onDeath(PlayerDeathEvent event){
         Player player = event.getEntity();
         Arena arena = Arena.get(player);
 

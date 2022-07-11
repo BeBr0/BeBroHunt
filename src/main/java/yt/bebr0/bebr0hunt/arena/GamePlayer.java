@@ -1,5 +1,6 @@
 package yt.bebr0.bebr0hunt.arena;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /*
@@ -16,6 +17,8 @@ public class GamePlayer {
     public GamePlayer(Player player, Role role) {
         this.role = role;
         this.player = player;
+
+        player.sendMessage(ChatColor.GOLD + "[BeBr0Hunt]: " + ChatColor.AQUA + " Вам выдана роль " + role.getName());
     }
 
     public int getTargetDamage() {

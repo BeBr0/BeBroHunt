@@ -1,7 +1,7 @@
 name: BeBroHunt
 version: '${project.version}'
 main: yt.bebr0.bebr0hunt.Plugin
-api-version: 1.19
+api-version: 1.18
 authors: [ BeBr0 ]
 
 commands:

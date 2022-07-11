@@ -19,10 +19,12 @@ import java.util.Map;
 */
 public class Arena {
 
-    private static List<Arena> arenaList = new ArrayList<>();
+    private static final List<Arena> arenaList = new ArrayList<>();
 
-    public static void add(String name){
-        arenaList.add(new Arena(name));
+    public static Arena add(String name){
+        Arena arena = new Arena(name);
+        arenaList.add(arena);
+        return arena;
     }
 
     public static Arena get(Player player) {
@@ -49,11 +51,12 @@ public class Arena {
     private Location pos1, pos2;
     private Location attackersSpawn;
     private Location lobby;
-    private int minPlayers = 1;
-    private int timeToStart = 5;
+    private int minPlayers = 4;
+    private int timeToStart = 30;
 
     private final List<Player> players = new ArrayList<>();
     private final Map<Player, Location> onJoinLocation = new HashMap<>();
+    private final Map<Player, Location> onJoinSpawn = new HashMap<>();
 
     private boolean isOpen = false;
     private boolean isStarting = false;
@@ -78,6 +81,10 @@ public class Arena {
                 player.removePotionEffect(potionEffect.getType());
             }
         }
+
+        for (Player player: onJoinSpawn.keySet()){
+            player.setBedSpawnLocation(onJoinLocation.get(player));
+        }
     }
 
     public boolean join(Player player){
@@ -87,6 +94,7 @@ public class Arena {
 
         if (isOpen) {
             players.add(player);
+            onJoinSpawn.put(player, player.getBedSpawnLocation());
             onJoinLocation.put(player, player.getLocation());
             player.teleport(lobby);
             sendArenaMessage(player.getDisplayName() + " присоединился!");
@@ -246,5 +254,9 @@ public class Arena {
 
     public void setTimeToStart(int timeToStart) {
         this.timeToStart = timeToStart;
+    }
+
+    public void setOpen(boolean b) {
+        isOpen = b;
     }
 }
