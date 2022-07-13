@@ -85,7 +85,19 @@ public class GameSettingCMDs implements CommandExecutor {
                 arena.setPos1(player.getLocation());
                 ChatUtil.sendMessage(player, "Первая позиция установлена", false);
                 return true;
-            } else if (args[0].equalsIgnoreCase("setPos2")) {
+            }else if (args[0].equalsIgnoreCase("remove")){
+                if (args.length == 1) {
+                    ChatUtil.sendMessage(player, "Укажи имя арены", true);
+                    return true;
+                }
+
+                Arena arena = Arena.get(args[1]);
+                if (arena == null) {
+                    ChatUtil.sendMessage(player, "Такой арены не существует", true);
+                    return true;
+                }
+            }
+            else if (args[0].equalsIgnoreCase("setPos2")) {
                 if (args.length == 1) {
                     ChatUtil.sendMessage(player, "Укажи имя арены", true);
                     return true;

@@ -39,6 +39,8 @@ public class Game {
 
     private final Arena arena;
 
+    private Location targetLocation;
+
     public Game(Arena arena){
         this.arena = arena;
     }
@@ -50,7 +52,6 @@ public class Game {
         randomizeClasses();
     }
     public void teleportPlayers(){
-        Location targetLocation;
 
         Random random = new Random();
         while (true) {
@@ -58,7 +59,8 @@ public class Game {
             int z = random.nextInt(arena.getPos1().getBlockZ(), arena.getPos2().getBlockZ());
 
             Location location = new Location(arena.getAttackersSpawn().getWorld(), x, -60, z);
-            if (location.distance(arena.getAttackersSpawn()) >= 50){
+            if (location.distance(arena.getAttackersSpawn()) >= 50 && arena.getAttackersSpawn().getBlockX() > arena.getPos1().getBlockX() && arena.getAttackersSpawn().getBlockZ() > arena.getPos1().getBlockZ() &&
+                    arena.getAttackersSpawn().getBlockX() < arena.getPos2().getBlockX() && arena.getAttackersSpawn().getBlockZ() < arena.getPos2().getBlockZ()){
                 boolean isFound = false;
                 for (int y = 319; y >= -60; y--){
                     location.setY(y);
@@ -67,6 +69,7 @@ public class Game {
                             isFound = true;
                             break;
                         }
+
                         break;
                     }
                 }
@@ -166,6 +169,7 @@ public class Game {
 
     public void onTargetDeath(Player killer){
         int maxDamage = 0;
+        getTarget().getPlayer().setGameMode(GameMode.SPECTATOR);
         GamePlayer secondWinner = null;
         for (GamePlayer gamePlayer: gamePlayers){
             if (gamePlayer.getTargetDamage() > maxDamage){
@@ -174,6 +178,44 @@ public class Game {
         }
 
         endGame(killer, secondWinner);
+    }
+
+    public void onDeath(Player player, Player killer){
+        player.setGameMode(GameMode.SPECTATOR);
+
+        new BukkitRunnable(){
+
+            int ctr = 8;
+            @Override
+            public void run() {
+                player.sendTitle(ChatColor.translateAlternateColorCodes('&', "Вас убил - &4" + killer.getDisplayName()),
+                        ChatColor.translateAlternateColorCodes('&', "&1Ты возродишься через " + ctr + " секунд!"), 0, 40, 10);
+
+                if (ctr-- <= 0){
+                    revive(player);
+                    cancel();
+
+                }
+            }
+        }.runTaskTimer(Plugin.getInstance(), 0L, 20L);
+
+    }
+
+    public void revive(Player player){
+        player.setGameMode(GameMode.SURVIVAL);
+        player.setHealth(20);
+        player.setFoodLevel(20);
+
+        if (getRole(player) == Role.ATTACKER){
+            player.teleport(arena.getAttackersSpawn());
+        }
+        else{
+            player.teleport(targetLocation);
+        }
+
+        for (PotionEffect potionEffect: player.getActivePotionEffects()){
+            player.removePotionEffect(potionEffect.getType());
+        }
     }
 
     public void endGame(Player winner, GamePlayer secondWinner){

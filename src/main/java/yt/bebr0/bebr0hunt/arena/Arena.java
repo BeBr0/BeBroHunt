@@ -1,6 +1,7 @@
 package yt.bebr0.bebr0hunt.arena;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -57,7 +58,6 @@ public class Arena {
 
     private final List<Player> players = new ArrayList<>();
     private final Map<Player, Location> onJoinLocation = new HashMap<>();
-    private final Map<Player, Location> onJoinSpawn = new HashMap<>();
 
     private boolean isOpen = false;
     private boolean isStarting = false;
@@ -77,6 +77,7 @@ public class Arena {
         for (Player player: onJoinLocation.keySet()){
             player.teleport(onJoinLocation.get(player));
             player.getInventory().clear();
+            player.setGameMode(GameMode.SURVIVAL);
 
             for (PotionEffect potionEffect: player.getActivePotionEffects()){
                 player.removePotionEffect(potionEffect.getType());
@@ -84,12 +85,6 @@ public class Arena {
         }
 
         onJoinLocation.clear();
-
-        for (Player player: onJoinSpawn.keySet()){
-            player.setBedSpawnLocation(onJoinLocation.get(player));
-        }
-
-        onJoinSpawn.clear();
 
         isOpen = true;
         isStarting = false;
@@ -102,7 +97,6 @@ public class Arena {
 
         if (isOpen) {
             players.add(player);
-            onJoinSpawn.put(player, player.getBedSpawnLocation());
             onJoinLocation.put(player, player.getLocation());
             player.teleport(lobby);
             sendArenaMessage(player.getDisplayName() + " присоединился!");
@@ -223,7 +217,9 @@ public class Arena {
     }
 
     public void setAttackersSpawn(Location attackersSpawn) {
-        this.attackersSpawn = attackersSpawn;
+        if (attackersSpawn.getBlockX() > pos1.getBlockX() && attackersSpawn.getBlockZ() > pos1.getBlockZ() &&
+            attackersSpawn.getBlockX() < pos2.getBlockX() && attackersSpawn.getBlockZ() < pos2.getBlockZ())
+            this.attackersSpawn = attackersSpawn;
     }
 
     public Game getGame() {

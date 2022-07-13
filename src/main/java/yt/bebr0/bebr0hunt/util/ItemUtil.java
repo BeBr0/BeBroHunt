@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -12,6 +13,7 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ItemUtil {
 
@@ -30,6 +32,29 @@ public class ItemUtil {
         itemMeta.lore(descriptionComponent);
 
         itemStack.setItemMeta(itemMeta);
+
+        return itemStack;
+    }
+
+    public static ItemStack createItemStack(String name, List<String> description, Material material, Map<Enchantment, Integer> enchantments) {
+        Component nameComponent = Component.text(ChatColor.translateAlternateColorCodes('&', name));
+
+        List<Component> descriptionComponent = new ArrayList<>();
+        for (String line : description) {
+            descriptionComponent.add(Component.text(line));
+        }
+
+        ItemStack itemStack = new ItemStack(material);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+
+        itemMeta.displayName(nameComponent);
+        itemMeta.lore(descriptionComponent);
+
+        itemStack.setItemMeta(itemMeta);
+
+        for (Enchantment enchantment: enchantments.keySet()){
+            itemStack.addUnsafeEnchantment(enchantment, enchantments.get(enchantment));
+        }
 
         return itemStack;
     }

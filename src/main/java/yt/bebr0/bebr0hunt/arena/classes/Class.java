@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -19,21 +20,23 @@ import java.util.Map;
 public enum Class {
 
     ARCHER("&aЛучник", List.of(
-            ItemUtil.createItemStack("&aЛук", new ArrayList<>(), Material.BOW),
+            ItemUtil.createItemStack("&aЛук", new ArrayList<>(), Material.BOW, Map.of(Enchantment.ARROW_INFINITE, 1)),
             ItemUtil.createItemStack("&aШлем лучника", new ArrayList<>(), Material.LEATHER_HELMET, Color.GREEN),
             ItemUtil.createItemStack("&aНагрудник лучника", new ArrayList<>(), Material.LEATHER_CHESTPLATE, Color.GREEN),
             ItemUtil.createItemStack("&aШтаны лучника", new ArrayList<>(), Material.LEATHER_LEGGINGS, Color.GREEN),
             ItemUtil.createItemStack("&aБотинки лучника", new ArrayList<>(), Material.LEATHER_BOOTS, Color.GREEN),
-            ItemUtil.createItemStack("&aМеч лучника", new ArrayList<>(), Material.STONE_SWORD)
+            ItemUtil.createItemStack("&aМеч лучника", new ArrayList<>(), Material.STONE_SWORD),
+            ItemUtil.createItemStack("&aСтрела", new ArrayList<>(), Material.ARROW)
     ), List.of(
-            new PotionEffect(PotionEffectType.SPEED, 10000, 1)
+            new PotionEffect(PotionEffectType.SPEED, 10000, 0)
     )),
     SWORD("&4Мечник", List.of(
             ItemUtil.createItemStack("&4Шлем мечника", new ArrayList<>(), Material.IRON_HELMET),
             ItemUtil.createItemStack("&4Нагрудник мечника", new ArrayList<>(), Material.IRON_CHESTPLATE),
             ItemUtil.createItemStack("&4Штаны мечника", new ArrayList<>(), Material.IRON_LEGGINGS),
             ItemUtil.createItemStack("&4Ботинки мечника", new ArrayList<>(), Material.IRON_BOOTS),
-            ItemUtil.createItemStack("&4Меч", new ArrayList<>(), Material.DIAMOND_SWORD)
+            ItemUtil.createItemStack("&4Меч", new ArrayList<>(), Material.DIAMOND_SWORD),
+            ItemUtil.createItemStack("&4Щит", new ArrayList<>(), Material.SHIELD)
     ), List.of(
 
     )),
@@ -75,15 +78,16 @@ public enum Class {
 
     )),
     CROSSBOWMAN("&bАрбалетчик", List.of(
-            ItemUtil.createItemStack("&bАрбалет", List.of("Это как лук, только без лука"), Material.CROSSBOW),
+            ItemUtil.createItemStack("&bАрбалет", List.of("Это как лук, только без лука"), Material.CROSSBOW, Map.of(Enchantment.ARROW_INFINITE, 1)),
             ItemUtil.createItemStack("&bМеч арбалетчика", new ArrayList<>(), Material.STONE_SWORD),
             ItemUtil.createItemStack("&bШлем арбалетчика", new ArrayList<>(), Material.LEATHER_HELMET, Color.PURPLE),
             ItemUtil.createItemStack("&bНагрудник арбалетчика", new ArrayList<>(), Material.LEATHER_CHESTPLATE, Color.PURPLE),
             ItemUtil.createItemStack("&bШтаны арбалетчика", new ArrayList<>(), Material.LEATHER_LEGGINGS, Color.PURPLE),
-            ItemUtil.createItemStack("&bБотинки арбалетчика", new ArrayList<>(), Material.LEATHER_BOOTS, Color.PURPLE)
+            ItemUtil.createItemStack("&bБотинки арбалетчика", new ArrayList<>(), Material.LEATHER_BOOTS, Color.PURPLE),
+            ItemUtil.createItemStack("&aБолт", new ArrayList<>(), Material.ARROW)
 
     ), List.of(
-            new PotionEffect(PotionEffectType.SPEED, 10000, 1)
+            new PotionEffect(PotionEffectType.SPEED, 10000, 0)
     ));
 
     private static final Map<Player, Class> playerClass = new HashMap<>();
@@ -116,10 +120,6 @@ public enum Class {
         }
 
         player.sendMessage(Component.text(ChatColor.translateAlternateColorCodes('&', "Ваш класс - " + name)));
-    }
-
-    public List<ItemStack> getClassItems() {
-        return classItems;
     }
 
     public String getName() {

@@ -20,7 +20,7 @@ public class GamePlayer {
         this.player = player;
 
         player.sendTitle(ChatColor.translateAlternateColorCodes('&', "Твоя роль - " + role.getName()),
-                ChatColor.translateAlternateColorCodes('&', "Твоя роль - " + role.getObjective()), 40, 10, 40);
+                ChatColor.translateAlternateColorCodes('&', role.getObjective()), 40, 10, 40);
     }
 
     public int getTargetDamage() {
